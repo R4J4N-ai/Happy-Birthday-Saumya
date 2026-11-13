@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Saumya! ✨</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Canvas for Confetti and Background Particles -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Floating Audio Control -->
+    <button class="music-control" id="musicToggle" aria-label="Toggle Music" title="Mute/Unmute Music">
+        <svg class="music-icon playing" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6zm-2 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+        </svg>
+        <svg class="music-icon muted hidden" viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M4.27 3L3 4.27l9 9v.28c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4v-1.73l6 6L21 20.73 4.27 3zM14 7h4V3h-6v5.18l2 2z"/>
+        </svg>
+    </button>
+
+    <!-- PAGE 1: Welcome Overlay (Envelope / Card Gate) -->
+    <section class="celebration-page active" id="page1">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        
+        <div class="welcome-card glass-panel">
+            <div class="envelope-wrapper">
+                <div class="envelope">
+                    <div class="envelope-flap"></div>
+                    <div class="envelope-paper">
+                        <div class="paper-content">
+                            <span class="heart">❤️</span>
+                            <h3>For Bestie Saumya</h3>
+                            <p>Tap to open...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h1 class="welcome-title">Happy Birthday, Saumya!</h1>
+            <p class="welcome-subtitle">A little surprise made just for my favorite human. Click below to open it!</p>
+            <button class="btn btn-primary" id="enterBtn">
+                <span>Open Surprise ✨</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- MAIN CONTAINER FOR STORY SLIDES -->
+    <main class="main-content hidden" id="mainContent">
+        <!-- Floating Stars in Background -->
+        <div class="stars-container" id="starsContainer"></div>
+
+        <!-- PAGE 2: Grand Greeting -->
+        <section class="celebration-page hidden" id="page2">
+            <div class="hero-section">
+                <div class="birthday-tag animate-fade-in">Happy Birthday Bestie</div>
+                <h1 class="birthday-name animate-pop-in" id="birthdayName">Saumya 💖</h1>
+                <p class="birthday-wish animate-fade-in">To my unpaid therapist, partner-in-crime, and favorite person to laugh with—thank you for making life 10x better just by being in it!</p>
+                <div class="navigation-controls">
+                    <button class="btn btn-primary navigation-btn" id="goToCakeBtn">
+                        <span>Make a Wish 🎂</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: Interactive Cake & Blowing Candle -->
+        <section class="celebration-page hidden" id="page3">
+            <div class="glass-panel interactive-card">
+                <h2 class="section-title">🎂 Blow the Candle, Saumya!</h2>
+                <p class="section-desc">Aankhein band karo, ek mast si wish maango, aur candle pe click karke phoonk maaro!</p>
+                
+                <div class="cake-wrapper">
+                    <!-- The Interactive Candle -->
+                    <div class="interactive-candle" id="candle">
+                        <div class="flame" id="flame">
+                            <div class="flame-inner"></div>
+                        </div>
+                        <div class="wick"></div>
+                        <div class="candle-body"></div>
+                        <div class="smoke hidden" id="smoke"></div>
+                    </div>
+                    
+                    <!-- Cake Graphic -->
+                    <div class="cake">
+                        <div class="cake-top-cream"></div>
+                        <div class="cake-layer layer-3">
+                            <div class="layer-fill"></div>
+                            <div class="layer-drips"></div>
+                        </div>
+                        <div class="cake-layer layer-2">
+                            <div class="layer-fill"></div>
+                        </div>
+                        <div class="cake-layer layer-1">
+                            <div class="layer-fill"></div>
+                        </div>
+                        <div class="cake-stand"></div>
+                    </div>
+                </div>
+
+                <div class="wish-indicator" id="wishInstructions">
+                    <span class="pulse-text">Click the candle flame!</span>
+                </div>
+
+                <!-- Navigation to Next Page (Revealed after candle is blown out) -->
+                <div class="navigation-controls hidden animate-fade-in" id="cakeNavContainer">
+                    <button class="btn btn-primary navigation-btn" id="goToGiftBtn">
+                        <span>Open Your Gift 🎁</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: Interactive Gift Box Reveal -->
+        <section class="celebration-page hidden" id="page4">
+            <!-- The Gift Box Panel -->
+            <div class="glass-panel interactive-card" id="giftPanel">
+                <h2 class="section-title">🎁 Unwrap Your Gift</h2>
+                <p class="section-desc">Gift box pe click karo—ek special note hai mere bestie ke liye!</p>
+                
+                <div class="gift-box-container">
+                    <div class="gift-box" id="giftBox">
+                        <div class="gift-lid"></div>
+                        <div class="gift-ribbon-v"></div>
+                        <div class="gift-ribbon-h"></div>
+                        <div class="gift-bow"></div>
+                        <div class="gift-body"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Page Revealed Card (appears after gift opens) -->
+            <div class="revealed-card hidden glass-panel" id="secretCard">
+                <span class="card-close" id="closeCardBtn">&times;</span>
+                <div class="full-card-layout">
+                    <div class="card-photo-frame">
+                        <div class="polaroid-photo" id="polaroidPhoto">
+                            <img src="gift_photo.jpeg" alt="Bestie Memory Photo" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                    </div>
+                    <div class="card-text-side">
+                        <h3 class="card-heading">To My Bestie Saumya ❤️</h3>
+                        <div class="card-message-content">
+                            <p>Happy Birthday to the one who knows all my secrets and still chooses to be my best friend! Life is honestly so much more fun, chaotic, and meaningful with you around.</p>
+                            <p>May this year bring you endless happiness, crazy adventures, zero stress, and everything you've been dreaming of. No matter where life takes us, I've always got your back!</p>
+                        </div>
+                        <div class="signature">Forever your bestie, <br><strong>Your Partner-in-Crime ✨</strong></div>
+                        <div style="margin-top: 20px; text-align: center;">
+                            <button class="btn btn-primary navigation-btn" id="goToBalloonsBtn">
+                                <span>Pop Bestie Balloons 🎈</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 5: Interactive Floating Wish Balloons -->
+        <section class="celebration-page hidden" id="page5">
+            <div class="glass-panel interactive-card balloon-game-panel">
+                <h2 class="section-title">🎈 Pop the Balloons, Saumya!</h2>
+                <p class="section-desc">Har balloon mein tumhare liye ek chhota sa bestie note chhupa hai—phod ke dekho!</p>
+                
+                <!-- Balloon Spawning Field -->
+                <div class="balloon-field" id="balloonField">
+                    <div class="game-instruction-overlay" id="balloonStartOverlay">
+                        <button class="btn btn-secondary" id="startBalloonsBtn">Release Balloons!</button>
+                    </div>
+                </div>
+
+                <!-- Wish Display Card when Balloon Pops -->
+                <div class="balloon-wish-display hidden glass-panel" id="wishDisplay">
+                    <span class="wish-close" id="closeWishBtn">&times;</span>
+                    <div class="wish-avatar" id="wishAvatar">💌</div>
+                    <h4 class="wish-sender" id="wishSender">Bestie Note</h4>
+                    <p class="wish-text" id="wishText">Always stay happy and keep smiling!</p>
+                </div>
+
+                <!-- Navigation to Next Page -->
+                <div class="navigation-controls" style="margin-top: 30px;">
+                    <button class="btn btn-primary navigation-btn" id="goToGalleryBtn">
+                        <span>Our Memories 📸</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 6: Photo Journey Slideshow -->
+        <section class="celebration-page hidden" id="page6">
+            <div class="glass-panel interactive-card">
+                <h2 class="section-title">📸 Bestie Rewind</h2>
+                <p class="section-desc">Kuch yaadein jo hamesha special rahengi...</p>
+                
+                <div class="slideshow-container">
+                    <div class="slide active">
+                        <div class="slide-card">
+                            <div class="slide-photo">
+                                <img src="pic1.jpeg" alt="Memory 1" style="width:100%; height:100%; object-fit:cover;">
+                            </div>
+                            <div class="slide-caption">“One of my favorite memories with my favorite human ✨”</div>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-card">
+                            <div class="slide-photo">
+                                <img src="pic2.jpeg" alt="Memory 2" style="width:100%; height:100%; object-fit:cover;">
+                            </div>
+                            <div class="slide-caption">“Endless laughs, zero filter, and pure bestie vibes 👯‍♀️”</div>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-card">
+                            <div class="slide-photo">
+                                <img src="pic3.jpeg" alt="Memory 3" style="width:100%; height:100%; object-fit:cover;">
+                            </div>
+                            <div class="slide-caption">“Here’s to many more crazy adventures together, Saumya! 💖”</div>
+                        </div>
+                    </div>
+
+                    <!-- Slide Controls -->
+                    <button class="slide-arrow prev" id="prevSlide">&#10094;</button>
+                    <button class="slide-arrow next" id="nextSlide">&#10095;</button>
+
+                    <!-- Dot Indicators -->
+                    <div class="slide-dots">
+                        <span class="dot active" data-index="0"></span>
+                        <span class="dot" data-index="1"></span>
+                        <span class="dot" data-index="2"></span>
+                    </div>
+                </div>
+
+                <!-- Restart Celebration -->
+                <div class="navigation-controls" style="margin-top: 50px;">
+                    <button class="btn btn-secondary navigation-btn" id="restartBtn">
+                        <span>Replay Celebration! ❤️</span>
+                    </button>
+                </div>
+            </div>
+            
+            <footer class="birthday-footer">
+                <p>Happy Birthday once again, Saumya! ❤️</p>
+                <div class="sparkle-text">Stay awesome, bestie...</div>
+            </footer>
+        </section>
+    </main>
+
+    <!-- Custom Pop Audio and Synth controls script -->
+    <script src="script.js"></script>
+</body>
+</html>

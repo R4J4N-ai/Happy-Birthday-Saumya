@@ -1,0 +1,1222 @@
+/* -------------------------------------------------------------
+ * Premium Birthday Animation CSS Stylesheet
+ * Contains glassmorphism, slide-by-slide transitions, & keyframe animations.
+ * ------------------------------------------------------------- */
+
+/* Design Tokens & Variables */
+:root {
+    --font-heading: 'Outfit', sans-serif;
+    --font-serif: 'Playfair Display', serif;
+    --font-handwritten: 'Dancing Script', cursive;
+
+    /* Theme Colors (Deep Indigo & Warm Rose Gold) */
+    --color-bg-1: #090615;
+    --color-bg-2: #140c26;
+    --color-bg-3: #220e3a;
+    --color-primary: #ff758f;
+    --color-primary-light: #ff7e95;
+    --color-secondary: #c084fc;
+    --color-gold: #fbbf24;
+    --color-gold-light: #fef08a;
+    --color-text-bright: #ffffff;
+    --color-text-muted: #cbd5e1;
+    --color-glass-bg: rgba(255, 255, 255, 0.05);
+    --color-glass-border: rgba(255, 255, 255, 0.12);
+    --color-glass-shadow: rgba(0, 0, 0, 0.4);
+
+    --transition-smooth: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    --transition-quick: all 0.25s ease;
+}
+
+/* Global Reset & Base Setup */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Hide scrollbars */
+}
+
+body {
+    background-color: var(--color-bg-1);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(34, 14, 58, 0.6) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(255, 117, 143, 0.15) 0%, transparent 50%),
+        linear-gradient(135deg, var(--color-bg-1) 0%, var(--color-bg-2) 50%, var(--color-bg-3) 100%);
+    color: var(--color-text-muted);
+    font-family: var(--font-heading);
+    line-height: 1.6;
+}
+
+/* Canvas overlay for particles/confetti */
+#particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Glassmorphism Panel Utility */
+.glass-panel {
+    background: var(--color-glass-bg);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid var(--color-glass-border);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px 0 var(--color-glass-shadow);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    border: none;
+    outline: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 117, 143, 0.4);
+    z-index: 2;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 117, 143, 0.6);
+}
+
+.btn-primary:hover::before {
+    opacity: 1;
+}
+
+.btn-primary:active {
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-bright);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Floating Audio Control */
+.music-control {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(20, 12, 38, 0.7);
+    border: 1px solid var(--color-glass-border);
+    backdrop-filter: blur(8px);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: var(--transition-quick);
+}
+
+.music-control:hover {
+    transform: scale(1.1);
+    color: var(--color-text-bright);
+    box-shadow: 0 4px 20px rgba(255, 117, 143, 0.5);
+}
+
+.music-icon {
+    width: 24px;
+    height: 24px;
+    transition: var(--transition-quick);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* -------------------------------------------------------------
+ * Page-by-Page Slide Structure
+ * ------------------------------------------------------------- */
+.main-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.celebration-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 24px;
+    overflow-y: auto; /* Allows content overflow scrolling inside pages if needed */
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.95) translateY(20px);
+    transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1),
+                transform 0.8s cubic-bezier(0.25, 1, 0.5, 1),
+                visibility 0.8s;
+    z-index: 2;
+}
+
+/* Page State Transitions */
+.celebration-page.active {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1) translateY(0);
+}
+
+.celebration-page.exit {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.05) translateY(-20px);
+}
+
+/* Moving glow shapes on Page 1 */
+.glow-orb {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: 0;
+    opacity: 0.35;
+    animation: floatOrb 10s infinite alternate ease-in-out;
+}
+
+.orb-1 {
+    background: var(--color-primary);
+    top: 20%;
+    left: 15%;
+}
+
+.orb-2 {
+    background: var(--color-secondary);
+    bottom: 20%;
+    right: 15%;
+    animation-delay: -5s;
+}
+
+@keyframes floatOrb {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-50px) scale(1.2); }
+}
+
+.welcome-card {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+    text-align: center;
+}
+
+/* Interactive Card/Envelope Animation */
+.envelope-wrapper {
+    margin-bottom: 30px;
+    perspective: 1000px;
+}
+
+.envelope {
+    position: relative;
+    width: 180px;
+    height: 120px;
+    background: #2b1d42;
+    margin: 0 auto;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.envelope:hover {
+    transform: rotateY(10deg) translateY(-5px);
+}
+
+.envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 90px solid transparent;
+    border-right: 90px solid transparent;
+    border-top: 70px solid #3c2a5c;
+    transform-origin: top;
+    transition: transform 0.4s ease-in-out 0.2s;
+    z-index: 3;
+}
+
+.welcome-card:hover .envelope-flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+}
+
+.envelope-paper {
+    position: absolute;
+    bottom: 5px;
+    left: 10px;
+    width: 160px;
+    height: 100px;
+    background: white;
+    border-radius: 4px;
+    z-index: 2;
+    transition: transform 0.4s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+}
+
+.welcome-card:hover .envelope-paper {
+    transform: translateY(-50px);
+}
+
+.paper-content {
+    text-align: center;
+    color: #2b1d42;
+    padding: 10px;
+}
+
+.paper-content h3 {
+    font-size: 0.85rem;
+    font-family: var(--font-heading);
+    margin: 5px 0;
+    font-weight: 800;
+}
+
+.paper-content p {
+    font-size: 0.7rem;
+    color: #ff758f;
+    font-weight: 600;
+}
+
+.heart {
+    font-size: 1.2rem;
+    display: block;
+    animation: heartbeat 1.2s infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.welcome-title {
+    font-size: 2.8rem;
+    font-family: var(--font-serif);
+    background: linear-gradient(to right, #ffffff, var(--color-primary-light), var(--color-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.welcome-subtitle {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    margin-bottom: 30px;
+    font-weight: 300;
+}
+
+/* -------------------------------------------------------------
+ * Interactive Cards & Sections
+ * ------------------------------------------------------------- */
+.interactive-card {
+    padding: 40px 30px;
+    text-align: center;
+    width: 100%;
+    max-width: 650px;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.interactive-card:hover {
+    transform: translateY(-2px);
+}
+
+.section-title {
+    font-size: 2rem;
+    font-family: var(--font-serif);
+    color: var(--color-text-bright);
+    margin-bottom: 10px;
+}
+
+.section-desc {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    max-width: 500px;
+    margin: 0 auto 30px;
+    font-weight: 300;
+}
+
+.navigation-controls {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.navigation-btn {
+    animation: buttonPulse 2s infinite alternate;
+}
+
+@keyframes buttonPulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.04); }
+}
+
+/* -------------------------------------------------------------
+ * Hero Section Styles
+ * ------------------------------------------------------------- */
+.hero-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.birthday-tag {
+    font-family: var(--font-handwritten);
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    text-shadow: 0 0 10px rgba(255, 117, 143, 0.3);
+    margin-bottom: 10px;
+}
+
+.birthday-name {
+    font-size: 4.5rem;
+    font-family: var(--font-serif);
+    color: var(--color-text-bright);
+    text-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+    margin-bottom: 20px;
+    letter-spacing: -1px;
+}
+
+.birthday-wish {
+    font-size: 1.25rem;
+    max-width: 600px;
+    margin: 0 auto 30px;
+    line-height: 1.7;
+    font-weight: 300;
+}
+
+/* -------------------------------------------------------------
+ * Section: Pure CSS Birthday Cake
+ * ------------------------------------------------------------- */
+.cake-wrapper {
+    position: relative;
+    width: 250px;
+    height: 220px;
+    margin: 40px auto 20px;
+    cursor: pointer;
+}
+
+/* Interactive Candle styling */
+.interactive-candle {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 50px;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.candle-body {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #c084fc, #a855f7, #c084fc);
+    border-radius: 6px;
+    box-shadow: inset 2px 0 3px rgba(255,255,255,0.4);
+}
+
+.wick {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 8px;
+    background: #475569;
+}
+
+/* Flame animation */
+.flame {
+    position: absolute;
+    top: -26px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 22px;
+    background: radial-gradient(ellipse at bottom, var(--color-gold-light) 20%, var(--color-gold) 50%, #f97316 100%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: 0 -4px 10px rgba(253, 224, 71, 0.5), 0 0 15px rgba(249, 115, 22, 0.3);
+    animation: flicker 1.5s infinite alternate ease-in-out;
+    transform-origin: bottom center;
+}
+
+.flame-inner {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 10px;
+    background: #eff6ff;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    opacity: 0.8;
+}
+
+@keyframes flicker {
+    0% { transform: translateX(-50%) scale(1) rotate(-1deg); }
+    100% { transform: translateX(-50%) scale(1.1) rotate(1.4deg) skewX(2deg); }
+}
+
+/* Smoke trail when extinguished */
+.smoke {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 0;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    filter: blur(2px);
+    animation: riseSmoke 1.5s ease-out forwards;
+}
+
+@keyframes riseSmoke {
+    0% {
+        height: 10px;
+        opacity: 0.8;
+        transform: translateX(-50%) translateY(0) scaleX(1);
+    }
+    100% {
+        height: 50px;
+        opacity: 0;
+        transform: translateX(-80%) translateY(-30px) scaleX(2.5);
+    }
+}
+
+/* Cake Structure */
+.cake {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 170px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.cake-layer {
+    width: 100%;
+    position: relative;
+    border-radius: 12px 12px 0 0;
+    box-shadow: inset 0 6px 10px rgba(255,255,255,0.1), 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.layer-1 {
+    height: 60px;
+    width: 220px;
+    background: linear-gradient(to right, #451a03, #78350f, #451a03); /* Chocolate base */
+    z-index: 1;
+}
+
+.layer-2 {
+    height: 50px;
+    width: 180px;
+    background: linear-gradient(to right, #db2777, #f472b6, #db2777); /* Strawberry layer */
+    margin-bottom: -5px;
+    z-index: 2;
+}
+
+.layer-3 {
+    height: 45px;
+    width: 140px;
+    background: linear-gradient(to right, #fdf4ff, #fae8ff, #fdf4ff); /* Vanilla Layer */
+    margin-bottom: -5px;
+    z-index: 3;
+}
+
+/* Cream drips on top layer */
+.cake-top-cream {
+    position: absolute;
+    top: 25px;
+    width: 140px;
+    height: 14px;
+    background: #ffffff;
+    border-radius: 8px 8px 0 0;
+    z-index: 4;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.layer-drips {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    z-index: 5;
+}
+
+.layer-drips::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle at 10px 0, #ffffff 12px, transparent 13px);
+    background-size: 20px 100%;
+}
+
+.cake-stand {
+    width: 260px;
+    height: 15px;
+    background: linear-gradient(to right, #cbd5e1, #f1f5f9, #cbd5e1);
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    z-index: 0;
+    margin-top: -2px;
+}
+
+.wish-indicator {
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-top: 20px;
+}
+
+.pulse-text {
+    animation: textPulse 1.5s infinite alternate;
+    color: var(--color-primary-light);
+}
+
+@keyframes textPulse {
+    0% { opacity: 0.6; transform: scale(0.98); }
+    100% { opacity: 1; transform: scale(1.02); }
+}
+
+/* -------------------------------------------------------------
+ * Section: Interactive Gift Box
+ * ------------------------------------------------------------- */
+.gift-box-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 20px auto 0;
+    height: 200px;
+}
+
+.gift-box {
+    width: 160px;
+    height: 160px;
+    background: linear-gradient(135deg, var(--color-primary), #e11d48);
+    position: relative;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    z-index: 10;
+    transform-origin: bottom center;
+}
+
+.gift-box:hover {
+    transform: scale(1.05) rotate(2deg);
+}
+
+.gift-lid {
+    position: absolute;
+    top: -20px;
+    left: -10px;
+    width: 180px;
+    height: 30px;
+    background: linear-gradient(135deg, var(--color-primary-light), #be123c);
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    z-index: 12;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: bottom left;
+}
+
+.gift-box.open .gift-lid {
+    transform: translateY(-80px) rotate(-45deg) scale(0.9);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.gift-box.open {
+    transform: translateY(60px) scale(0.2);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Ribbon decorations on gift box */
+.gift-ribbon-v, .gift-ribbon-h {
+    position: absolute;
+    background: var(--color-gold);
+    box-shadow: inset 1px 1px 3px rgba(255,255,255,0.3);
+}
+
+.gift-ribbon-v {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 25px;
+    height: 100%;
+}
+
+.gift-ribbon-h {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 25px;
+}
+
+.gift-bow {
+    position: absolute;
+    top: -38px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 20px;
+    z-index: 13;
+    transition: transform 0.8s;
+}
+
+.gift-box.open .gift-bow {
+    transform: translateY(-90px) rotate(-60deg) scale(0);
+    opacity: 0;
+}
+
+.gift-bow::before, .gift-bow::after {
+    content: '';
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border: 6px solid var(--color-gold);
+    border-radius: 50%;
+    top: -10px;
+}
+
+.gift-bow::before {
+    left: 0;
+    transform: rotate(-30deg);
+}
+
+.gift-bow::after {
+    right: 0;
+    transform: rotate(30deg);
+}
+
+/* Revealed secret message card - full page takeover */
+.revealed-card {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 200;
+    background: rgba(9, 6, 21, 0.97);
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+}
+
+.revealed-card.show {
+    transform: scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Close button for full-page card */
+.revealed-card .card-close {
+    position: fixed;
+    top: 20px;
+    right: 25px;
+    font-size: 32px;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    z-index: 201;
+    line-height: 1;
+    transition: color 0.2s;
+}
+
+.revealed-card .card-close:hover {
+    color: var(--color-primary);
+}
+
+/* Side-by-side layout inside the full-page card */
+.full-card-layout {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    max-width: 780px;
+    width: 100%;
+}
+
+.full-card-layout .card-photo-frame {
+    flex: 0 0 320px;
+    background: white;
+    padding: 10px 10px 30px 10px;
+    border-radius: 6px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    transform: rotate(-2deg);
+    transition: transform 0.4s ease;
+    margin-bottom: 0;
+}
+
+.full-card-layout .card-photo-frame:hover {
+    transform: rotate(0deg) scale(1.02);
+}
+
+.full-card-layout .polaroid-photo {
+    width: 100%;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+}
+
+.card-text-side {
+    flex: 1;
+}
+
+@media (max-width: 680px) {
+    .full-card-layout {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .full-card-layout .card-photo-frame {
+        flex: none;
+        width: 220px;
+    }
+}
+
+.card-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    line-height: 1;
+    transition: var(--transition-quick);
+}
+
+.card-close:hover {
+    color: var(--color-primary);
+}
+
+.card-photo-frame {
+    width: 100%;
+    margin-bottom: 8px;
+    background: white;
+    padding: 5px 5px 14px 5px;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transform: rotate(-2deg);
+    transition: var(--transition-smooth);
+}
+
+.card-photo-frame:hover {
+    transform: rotate(0deg) scale(1.02);
+}
+
+.polaroid-photo {
+    width: 100%;
+    aspect-ratio: 4/2.5;
+    overflow: hidden;
+    background: #000;
+}
+
+.photo-placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.card-heading {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    color: var(--color-primary-light);
+    margin-bottom: 14px;
+    border-bottom: 1px dashed rgba(255,255,255,0.15);
+    padding-bottom: 10px;
+}
+
+.card-message-content {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--color-text-muted);
+    margin-bottom: 20px;
+}
+
+.signature {
+    text-align: right;
+    font-family: var(--font-handwritten);
+    font-size: 1.5rem;
+    color: var(--color-text-bright);
+}
+
+/* -------------------------------------------------------------
+ * Section: Floating Wish Balloons Game
+ * ------------------------------------------------------------- */
+.balloon-game-panel {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 650px;
+}
+
+.balloon-field {
+    position: relative;
+    width: 100%;
+    height: 350px;
+    background: rgba(0,0,0,0.25);
+    border-radius: 16px;
+    border: 1px dashed rgba(255,255,255,0.08);
+    overflow: hidden;
+}
+
+.game-instruction-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(9, 6, 21, 0.8);
+    z-index: 5;
+    transition: var(--transition-smooth);
+}
+
+.game-instruction-overlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Dynamically Generated Balloons styling */
+.balloon {
+    position: absolute;
+    width: 50px;
+    height: 65px;
+    border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+    cursor: pointer;
+    bottom: -80px;
+    z-index: 2;
+    transition: transform 0.15s ease-out;
+}
+
+.balloon::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 8px solid currentColor;
+}
+
+/* String for balloon */
+.balloon-string {
+    position: absolute;
+    bottom: -46px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.balloon.pop {
+    animation: balloonPopAnimation 0.25s ease-out forwards;
+}
+
+@keyframes balloonPopAnimation {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.8; filter: brightness(1.5); }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+/* Wish popup modal styling */
+.balloon-wish-display {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    width: 90%;
+    max-width: 320px;
+    padding: 24px;
+    z-index: 100;
+    text-align: center;
+    background: rgba(20, 12, 38, 0.95);
+    border: 2px solid var(--color-secondary);
+    box-shadow: 0 0 30px rgba(192, 132, 252, 0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+}
+
+.balloon-wish-display.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.wish-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    color: var(--color-text-muted);
+    cursor: pointer;
+}
+
+.wish-close:hover {
+    color: var(--color-secondary);
+}
+
+.wish-avatar {
+    font-size: 2.8rem;
+    margin-bottom: 8px;
+}
+
+.wish-sender {
+    font-size: 1.1rem;
+    color: var(--color-text-bright);
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.wish-text {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--color-text-bright);
+}
+
+/* -------------------------------------------------------------
+ * Section: Photo Journey Slideshow
+ * ------------------------------------------------------------- */
+.slideshow-container {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    margin: 20px auto 0;
+    height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: scale(0.95) rotate(-1deg);
+    transition: transform 0.6s ease, opacity 0.6s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.slide.active {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    z-index: 2;
+    pointer-events: auto;
+}
+
+.slide-card {
+    background: #ffffff;
+    padding: 14px 14px 30px 14px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.slide-photo {
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #f1f5f9;
+}
+
+.slide-caption {
+    margin-top: 12px;
+    color: #1e293b;
+    font-family: var(--font-handwritten);
+    font-size: 1.3rem;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Navigation arrows */
+.slide-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(20, 12, 38, 0.85);
+    border: 1px solid var(--color-glass-border);
+    color: white;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: var(--transition-quick);
+}
+
+.slide-arrow:hover {
+    background: var(--color-primary);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.prev { left: -50px; }
+.next { right: -50px; }
+
+/* Dot Indicators */
+.slide-dots {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    cursor: pointer;
+    transition: var(--transition-quick);
+}
+
+.dot.active {
+    background: var(--color-primary-light);
+    transform: scale(1.2);
+}
+
+/* -------------------------------------------------------------
+ * Footer Elements
+ * ------------------------------------------------------------- */
+.birthday-footer {
+    text-align: center;
+    padding: 30px 0 10px;
+    width: 100%;
+}
+
+.birthday-footer p {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    color: var(--color-text-bright);
+    margin-bottom: 5px;
+}
+
+.sparkle-text {
+    font-family: var(--font-handwritten);
+    font-size: 1.6rem;
+    color: var(--color-gold);
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+    .celebration-page {
+        padding: 60px 16px 40px;
+        overflow-y: auto; /* Enable vertical scrolling inside full-screen pages for small screens */
+    }
+    
+    .birthday-name {
+        font-size: 3rem;
+    }
+    
+    .welcome-title {
+        font-size: 2.2rem;
+    }
+    
+    .prev { left: -10px; }
+    .next { right: -10px; }
+    
+    .slide-arrow {
+        width: 36px;
+        height: 36px;
+        font-size: 0.95rem;
+        background: rgba(20, 12, 38, 0.95);
+    }
+    
+    .interactive-card {
+        padding: 30px 16px;
+    }
+}
