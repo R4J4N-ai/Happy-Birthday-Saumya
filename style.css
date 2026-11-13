@@ -1220,3 +1220,21 @@ body {
         padding: 30px 16px;
     }
 }
+
+/* Mobile Screen Fix for Page 5 & Overflowing Pages */
+@media (max-width: 768px) {
+    .celebration-page {
+        justify-content: flex-start;
+        padding-top: 70px;
+        padding-bottom: 50px;
+        height: 100dvh;
+    }
+
+    .balloon-field {
+        height: 240px;
+    }
+
+    .balloon-game-panel .navigation-controls {
+        margin-top: 18px !important;
+    }
+}
